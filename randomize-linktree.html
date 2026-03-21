@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Randomize MUJ – The Fest 3.0</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #050608;
+      --surface: #0d0f14;
+      --border: rgba(255,255,255,0.07);
+      --accent: #00f0a0;
+      --accent2: #0066ff;
+      --text: #f0f2f5;
+      --muted: #6b7280;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 48px 20px 80px;
+      overflow-x: hidden;
+    }
+
+    /* background grid */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,240,160,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,240,160,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* glow blob */
+    body::after {
+      content: '';
+      position: fixed;
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(0,102,255,0.12) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+
+    /* header */
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .badge {
+      display: inline-block;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid rgba(0,240,160,0.3);
+      padding: 4px 12px;
+      border-radius: 100px;
+      margin-bottom: 20px;
+      background: rgba(0,240,160,0.05);
+    }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 8vw, 3rem);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #fff 40%, #6b7280 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+    }
+
+    .tagline {
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 300;
+      letter-spacing: 0.02em;
+    }
+
+    /* fest banner */
+    .fest-banner {
+      width: 100%;
+      background: linear-gradient(135deg, rgba(0,102,255,0.15), rgba(0,240,160,0.08));
+      border: 1px solid rgba(0,102,255,0.25);
+      border-radius: 16px;
+      padding: 20px 24px;
+      margin-bottom: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      animation: fadeUp 0.6s 0.1s ease both;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .fest-banner::before {
+      content: '';
+      position: absolute;
+      top: 0; right: 0;
+      width: 120px; height: 120px;
+      background: radial-gradient(circle, rgba(0,240,160,0.1), transparent 70%);
+      pointer-events: none;
+    }
+
+    .fest-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .fest-sub {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 300;
+    }
+
+    .fest-prize {
+      margin-top: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--accent);
+    }
+
+    /* links */
+    .links {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .link-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 18px 22px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      text-decoration: none;
+      color: var(--text);
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    .link-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(0,240,160,0.05), transparent);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .link-card:hover {
+      border-color: rgba(0,240,160,0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(0,240,160,0.08);
+    }
+
+    .link-card:hover::before { opacity: 1; }
+
+    .link-card:nth-child(1) { animation-delay: 0.2s; }
+    .link-card:nth-child(2) { animation-delay: 0.3s; }
+    .link-card:nth-child(3) { animation-delay: 0.4s; }
+    .link-card:nth-child(4) { animation-delay: 0.5s; }
+
+    .link-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .link-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .icon-hack  { background: rgba(0,240,160,0.1); }
+    .icon-debate { background: rgba(0,102,255,0.12); }
+    .icon-quant { background: rgba(255,180,0,0.1); }
+    .icon-cluedo { background: rgba(220,50,50,0.1); }
+
+    .link-info {}
+    .link-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 2px;
+    }
+    .link-desc {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 300;
+    }
+
+    .link-arrow {
+      font-size: 16px;
+      color: var(--muted);
+      transition: color 0.2s, transform 0.2s;
+    }
+
+    .link-card:hover .link-arrow {
+      color: var(--accent);
+      transform: translateX(3px);
+    }
+
+    /* footer */
+    .footer {
+      margin-top: 48px;
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      animation: fadeUp 0.5s 0.6s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <div class="header">
+      <div class="badge">Manipal University Jaipur</div>
+      <h1>Randomize();</h1>
+      <p class="tagline">Official CSE Club &nbsp;·&nbsp; Events &amp; Registrations</p>
+    </div>
+
+    <div class="fest-banner">
+      <div class="fest-name">🎯 The Fest 3.0</div>
+      <div class="fest-sub">Multi-event tech fest by Randomize MUJ</div>
+      <div class="fest-prize">
+        <span>🏆</span> ₹27,000 Prize Pool · 24hr Hackathon
+      </div>
+    </div>
+
+    <div class="links">
+
+      <a class="link-card" href="https://docs.google.com/forms/d/e/1FAIpQLScr35sluhS5qL_hv709bEptChZk4pZBvO3qN4_GUOVZk3m8NQ/viewform?usp=publish-editor" target="_blank" rel="noopener">
+        <div class="link-left">
+          <div class="link-icon icon-hack">⚡</div>
+          <div class="link-info">
+            <div class="link-title">Hackathon – Mar 27</div>
+            <div class="link-desc">24-hour build challenge · ₹27k prize pool</div>
+          </div>
+        </div>
+        <div class="link-arrow">→</div>
+      </a>
+
+      <a class="link-card" href="https://docs.google.com/forms/d/e/1FAIpQLSe92v_fhHbXo3oI5OIatmo8vWAeUii5MK4eXhn5blLpjHu3Dg/viewform?usp=header" target="_blank" rel="noopener">
+        <div class="link-left">
+          <div class="link-icon icon-debate">🎙️</div>
+          <div class="link-info">
+            <div class="link-title">Tech Debate</div>
+            <div class="link-desc">Argue, defend, and out-think the room</div>
+          </div>
+        </div>
+        <div class="link-arrow">→</div>
+      </a>
+
+      <a class="link-card" href="https://forms.gle/dugMVnkBGBw7Hkwj6" target="_blank" rel="noopener">
+        <div class="link-left">
+          <div class="link-icon icon-quant">📈</div>
+          <div class="link-info">
+            <div class="link-title">Quant Clash</div>
+            <div class="link-desc">High Frequency Trading simulation event</div>
+          </div>
+        </div>
+        <div class="link-arrow">→</div>
+      </a>
+
+      <a class="link-card" href="https://forms.gle/5EEPT9EXQS72L7aH9" target="_blank" rel="noopener">
+        <div class="link-left">
+          <div class="link-icon icon-cluedo">🔍</div>
+          <div class="link-info">
+            <div class="link-title">Cluedo</div>
+            <div class="link-desc">Mystery, logic, and deduction challenge</div>
+          </div>
+        </div>
+        <div class="link-arrow">→</div>
+      </a>
+
+    </div>
+
+    <div class="footer">randomize.muj &nbsp;·&nbsp; The Fest 3.0</div>
+
+  </div>
+</body>
+</html>
